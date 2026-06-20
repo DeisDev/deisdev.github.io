@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <style>@font-face { font-family: Doto; font-style: normal; font-weight: 500; src: url(data:font/woff2;base64,d09GMgABAAAAAALIAA4AAAAABwAAAAJwAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGhYGYD9TVEFUQAA8EQgKhDiEewsIAAE2AiQDCgQgBYQoByAMBxtHBsgEHmjO990lZVR/yJAyuCEpZFs1YLvpsWK2y/9/P3V5fID1CFbovxd3EUFVFlE4wE0kGndGaTK3DWOXF1mMAOzwGkFBOttVuVT8xQByj7wNbOzjvhAv6Sek2SptVouUilmazkIemN75Pvr2nTyA+7SxUbmqG0HZJnoy8PUNf4fRt02iMXNe8DusjpH5c2ZPnEm8Hk9UBO91o3IChJFongIpbKMQCihdQSkU+lHpCkaklZNbdX2iwo26rr/WTzWgNxjVdVwRKA7bGPOCCDN9hwZ6dQK1G65SVY++dZnFYV7vsNjTYs9m+NNNm222vZuF2LzZujAlc61ytp7X/0PHEvb369E61FrVr+fMnly8ssv9w62lwzZkZGtDuxOZB4Y/aD7Z7x5awJkv7rPrc2fuH2ntPfBt7Ys1rpH/zFL5mBd5fcJy1jv4pv3NY/j/P5ITlW130yA7UC+qTC7Fj19OhPV6Qoq/9K+ghs8oQiMwWVPssXP45ZhVC/Zf5HuEBEGeIYmTh0ihJ6f71WpkIMo2ZCRITuJkMEO14m3pOyMksBNlG/lOjY09BxPRiLGOKhkqzEJjI0mqZFkCMfhonAQV5pOnSo6N5NAoUy5wVyjA3OH0oQ95LqaRIwZLc1TIkGRD5nYZjd7kKRFnInkqymCvSdiLEyXKJLsVttGP3vQ16gIYwdyTGQDbGIA9H+JbCK6jVC3dBhOWGGxS2tSlNvrTl/4MpFeQ28ZCEmisbgD3XEowkUJjQwf3OKoQEltaX6aNrofhjZOsPFRlPb3ZQJ7sERGHArXNEoskrGCOPljf7X/ciH6S/k8o/7rQt7fU/QAAAA==) format("woff2"); }
+      .cls-1 {
+        fill: #231f20;
+      }
+
+      .cls-2 {
+        fill: #fff;
+        font-family: Doto-Medium, Doto;
+        font-size: 420.82px;
+        font-variation-settings: 'ROND' 0, 'wght' 500;
+        font-weight: 500;
+      }
+    </style>
+  </defs>
+  <g id="Layer_2" data-name="Layer 2">
+    <rect class="cls-1" width="512" height="512"/>
+  </g>
+  <g id="Layer_1" data-name="Layer 1">
+    <text class="cls-2" transform="translate(23.79 382.34)"><tspan x="0" y="0">d</tspan></text>
+    <text class="cls-2" transform="translate(245.06 382.34)"><tspan x="0" y="0">d</tspan></text>
+  </g>
+</svg>
