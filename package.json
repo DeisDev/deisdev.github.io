@@ -1,0 +1,16 @@
+{
+  "name": "deisdev-site",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "sync": "node scripts/sync.mjs",
+    "check": "node --check scripts/build.mjs && node --check scripts/catalog.mjs && node --check scripts/sync.mjs && node --check src/theme.js"
+  },
+  "devDependencies": {
+    "sanitize-html": "2.17.7"
+  }
+}
