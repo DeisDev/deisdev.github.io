@@ -8,9 +8,10 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "sync": "node scripts/sync.mjs",
-    "check": "node --check scripts/build.mjs && node --check scripts/catalog.mjs && node --check scripts/sync.mjs && node --check src/theme.js"
+    "check": "node --check scripts/build.mjs && node --check scripts/catalog.mjs && node --check scripts/icons.mjs && node --check scripts/sync.mjs && node --check src/theme.js"
   },
   "devDependencies": {
-    "sanitize-html": "2.17.7"
+    "sanitize-html": "2.17.7",
+    "simple-icons": "15.22.0"
   }
 }

@@ -1,10 +1,11 @@
 import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
 import { renderFeatured } from './catalog.mjs';
+import { renderSimpleIcons } from './icons.mjs';
 
 const root = new URL('../', import.meta.url);
 const data = JSON.parse(await readFile(new URL('data/projects.json', root), 'utf8'));
 const template = await readFile(new URL('src/index.html', root), 'utf8');
-const html = renderFeatured(template, data);
+const html = renderSimpleIcons(renderFeatured(template, data));
 await mkdir(new URL('dist/', root), { recursive: true });
 await writeFile(new URL('dist/index.html', root), html);
 for (const file of ['style.css', 'theme.js', 'favicon.svg', 'doto-latin-800.woff2', 'Doto-OFL.txt']) {

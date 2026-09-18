@@ -86,18 +86,18 @@ export function renderFeatured(template, data) {
   validateFeatured(data);
   const e = escapeHtml;
   const downloads = '<ul class="downloads">' + data.downloads.map((asset) =>
-    '<li><a href="' + e(asset.url) + '" title="' + e(asset.name) + '"><svg class="link-icon" width="16" height="16" aria-hidden="true" focusable="false"><use href="#icon-download"></use></svg>' + e(downloadLabel(asset)) + '</a></li>'
+    '<li><a href="' + e(asset.url) + '" title="' + e(asset.name) + '">' + e(downloadLabel(asset)) + '</a></li>'
   ).join('') + '</ul>';
   const section = '<section aria-labelledby="featured-project">' +
     '<h2 id="featured-project">' + e(data.name) + '</h2>' +
     '<p>' + e(data.description) + '</p>' +
     '<div class="download-panel"><h3>Downloads</h3>' +
-    '<p class="release">Version ' + e(data.version) + ' · <a href="' + e(data.releaseUrl) + '"><svg class="link-icon" width="16" height="16" aria-hidden="true" focusable="false"><use href="#icon-release"></use></svg>Release notes</a></p>' +
+    '<p class="release">Version ' + e(data.version) + ' · <a href="' + e(data.releaseUrl) + '"><!-- SIMPLE_ICON:github -->Release notes</a></p>' +
     downloads + '</div>' +
     '<details class="readme"><summary>README</summary><div class="readme-content">' + renderReadme(data) + '</div></details>' +
-    '<div class="links"><a href="' + e(data.repoUrl) + '"><svg class="link-icon" width="16" height="16" aria-hidden="true" focusable="false"><use href="#icon-code"></use></svg>Source</a>' +
-    (data.hasIssues ? '<a href="' + e(data.repoUrl + '/issues') + '"><svg class="link-icon" width="16" height="16" aria-hidden="true" focusable="false"><use href="#icon-issue"></use></svg>Issues</a>' : '') +
-    '<a href="' + e(data.repoUrl + '/releases') + '"><svg class="link-icon" width="16" height="16" aria-hidden="true" focusable="false"><use href="#icon-release"></use></svg>All releases</a></div></section>';
+    '<div class="links"><a href="' + e(data.repoUrl) + '"><!-- SIMPLE_ICON:github -->Source</a>' +
+    (data.hasIssues ? '<a href="' + e(data.repoUrl + '/issues') + '"><!-- SIMPLE_ICON:github -->Issues</a>' : '') +
+    '<a href="' + e(data.repoUrl + '/releases') + '"><!-- SIMPLE_ICON:github -->All releases</a></div></section>';
   for (const [key, value] of Object.entries({ SUBSCRIBERS: new Intl.NumberFormat('en').format(data.subscribers), FEATURED_PROJECT: section })) {
     const token = '<!-- ' + key + ' -->';
     if (!template.includes(token)) throw new Error('Missing template token: ' + key);
