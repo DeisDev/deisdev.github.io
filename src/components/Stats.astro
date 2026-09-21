@@ -1,0 +1,49 @@
+---
+import Icon from './Icon.astro';
+import stats from '../../data/stats.json';
+
+const number = new Intl.NumberFormat('en');
+const { github, steam, updatedAt } = stats;
+const events = github.activity.reduce((sum, day) => sum + day.count, 0);
+const max = Math.max(1, ...github.activity.map((day) => day.count));
+const formatDate = (date: string) => new Date(date).toLocaleDateString('en', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+---
+
+<div class="stats-heading">
+  <span class="eyebrow"><span class="status-square"></span> Beyond the code</span>
+  <span class="tiny">Updated <time datetime={updatedAt}>{formatDate(updatedAt)}</time> · Daily snapshot</span>
+</div>
+<div class="stats-grid">
+  <article class="stat-panel github-panel" aria-labelledby="github-title">
+    <div class="panel-heading">
+      <a class="platform" href={`https://github.com/${github.username}`} target="_blank" rel="noreferrer"><Icon name="github" size={21} /><h3 id="github-title">GitHub</h3><span class="tiny">@{github.username}</span></a>
+      <a class="icon-link" href={`https://github.com/${github.username}`} target="_blank" rel="noreferrer" aria-label="View GitHub profile"><Icon name="arrow" size={17} /></a>
+    </div>
+    <dl class="github-numbers">
+      {[[github.repositories, 'Repositories'], [github.stars, 'Stars earned'], [github.followers, 'Followers'], [github.forks, 'Forks']].map(([value, label]) => <div><dt>{label}</dt><dd>{number.format(Number(value))}</dd></div>)}
+    </dl>
+    <div class="chart-header"><span>Public activity</span><span class="tiny">Last 30 days</span></div>
+    <div class="activity-chart" role="img" aria-label={`${events} public events in the last 30 days${github.activityLimited ? ', limited to the latest 300 events' : ''}. Daily counts available below.`}>
+      {github.activity.map((day) => <div class="activity-day" title={`${formatDate(day.date)}: ${day.count} public events`}>
+        {Array.from({ length: 8 }, (_, index) => <span class:list={['activity-pixel', { filled: day.count > 0 && index < Math.ceil((day.count / max) * 8) }]} />)}
+      </div>)}
+    </div>
+    <div class="chart-footer tiny"><span>{formatDate(github.activity[0].date)}</span><span><span class="status-square"></span> {number.format(events)} public events</span><span>{formatDate(github.activity[29].date)}</span></div>
+    <details class="activity-details">
+      <summary>Daily activity <span aria-hidden="true">+</span></summary>
+      <p class="tiny">Public events · UTC · Up to the latest 300 events{github.activityLimited ? ' (limit reached)' : ''}</p>
+      <div class="daily-counts">{github.activity.map((day) => <span><time datetime={day.date}>{formatDate(day.date)}</time><b>{day.count}</b></span>)}</div>
+    </details>
+  </article>
+
+  <article class="stat-panel steam-panel" aria-labelledby="steam-title">
+    <div class="panel-heading">
+      <div class="platform"><Icon name="steam" size={22} /><h3 id="steam-title">Workshop</h3></div>
+      <a class="icon-link" href={`https://steamcommunity.com/sharedfiles/filedetails/?id=${steam.workshopId}`} target="_blank" rel="noreferrer" aria-label="View Better Lights on Steam"><Icon name="arrow" size={17} /></a>
+    </div>
+    <div class="steam-art" aria-hidden="true">{Array.from({ length: 60 }, (_, i) => <span style={`--i:${i};--brightness:${0.1 + (Math.sin(i * 1.7) + 1) * 0.38}`} />)}</div>
+    <div class="workshop-number"><span class="eyebrow">Better Lights</span><strong>{number.format(steam.subscribers)}</strong><span>Workshop subscribers</span></div>
+    <dl class="steam-numbers"><div><dt>Favorites</dt><dd>{number.format(steam.favorites)}</dd></div><div><dt>Views</dt><dd>{number.format(steam.views)}</dd></div></dl>
+    <a class="text-link" href="https://steamcommunity.com/id/catsniffermeow/myworkshopfiles/" target="_blank" rel="noreferrer">Explore my Workshop <Icon name="arrow" size={14} /></a>
+  </article>
+</div>

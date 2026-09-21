@@ -1,0 +1,20 @@
+---
+import { siGithub, siSteam, siDiscord, siModrinth, siNexusmods, siBuymeacoffee } from 'simple-icons';
+
+interface Props {
+  name: 'github' | 'steam' | 'discord' | 'modrinth' | 'nexusmods' | 'buymeacoffee' | 'arrow' | 'down' | 'mail' | 'copy';
+  size?: number;
+}
+
+const { name, size = 18 } = Astro.props;
+const brands = { github: siGithub, steam: siSteam, discord: siDiscord, modrinth: siModrinth, nexusmods: siNexusmods, buymeacoffee: siBuymeacoffee };
+const brand = name in brands ? brands[name as keyof typeof brands] : undefined;
+---
+<svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" class="icon">
+  {brand ? <path d={brand.path} fill="currentColor" /> : <g stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter">
+    {name === 'arrow' && <path d="M5 19 19 5M5 5h14v14" />}
+    {name === 'down' && <path d="M12 4v16M5 13l7 7 7-7" />}
+    {name === 'mail' && <><path d="M3 5h18v14H3z" /><path d="m3 6 9 7 9-7" /></>}
+    {name === 'copy' && <><path d="M8 8h12v12H8z" /><path d="M4 16V4h12" /></>}
+  </g>}
+</svg>

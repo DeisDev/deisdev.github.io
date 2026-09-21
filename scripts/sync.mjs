@@ -1,57 +1,111 @@
 import { readFile, writeFile, rename } from 'node:fs/promises';
-import { validateFeatured } from './catalog.mjs';
 
-const { repository } = JSON.parse(await readFile(new URL('../data/source.json', import.meta.url), 'utf8'));
-if (!/^[\w.-]+\/[\w.-]+$/.test(repository)) throw new Error('Invalid configured repository.');
-const api = 'https://api.github.com/repos/' + repository;
+const source = JSON.parse(await readFile(new URL('../data/source.json', import.meta.url), 'utf8'));
+const { githubUsername, workshopId, repository } = source;
+if (typeof githubUsername !== 'string' || !/^[\w-]+$/.test(githubUsername)
+  || typeof workshopId !== 'string' || !/^\d+$/.test(workshopId)
+  || typeof repository !== 'string' || !/^[\w.-]+\/[\w.-]+$/.test(repository)) {
+  throw new Error('Set a valid GitHub username, repository, and Steam Workshop ID in data/source.json.');
+}
+
 const headers = {
   Accept: 'application/vnd.github+json',
   'X-GitHub-Api-Version': '2026-03-10',
-  ...(process.env.GITHUB_TOKEN ? { Authorization: 'Bearer ' + process.env.GITHUB_TOKEN } : {})
+  ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
 };
 
-async function request(url, options = {}, format = 'json') {
+async function request(url, options = {}) {
   const response = await fetch(url, {
     ...options,
     headers: { 'User-Agent': 'DeisDevSite (https://github.com/DeisDev)', ...options.headers },
-    signal: AbortSignal.timeout(30_000)
+    signal: AbortSignal.timeout(30_000),
   });
-  if (!response.ok) throw new Error(new URL(url).hostname + ' returned HTTP ' + response.status + '; saved data was not replaced.');
-  return format === 'text' ? response.text() : response.json();
+  if (!response.ok) {
+    throw new Error(`${new URL(url).hostname} returned HTTP ${response.status}; the saved snapshot was not replaced.`);
+  }
+  return response.json();
 }
 
-const [repo, release, readme, readmeHtml, steam] = await Promise.all([
-  request(api, { headers }),
-  request(api + '/releases/latest', { headers }),
-  request(api + '/readme', { headers }),
-  request(api + '/readme', { headers: { ...headers, Accept: 'application/vnd.github.html+json' } }, 'text'),
+async function pages(path, limit = Infinity) {
+  const result = [];
+  for (let page = 1; page <= limit; page++) {
+    const batch = await request(`https://api.github.com${path}${path.includes('?') ? '&' : '?'}per_page=100&page=${page}`, { headers });
+    if (!Array.isArray(batch)) throw new Error(`Expected a list from GitHub ${path}.`);
+    result.push(...batch);
+    if (batch.length < 100) break;
+  }
+  return result;
+}
+
+function count(value, label) {
+  if (!Number.isSafeInteger(value) || value < 0) throw new Error(`Invalid ${label} from the public API.`);
+  return value;
+}
+
+const [profile, repos, events, steam, release] = await Promise.all([
+  request(`https://api.github.com/users/${githubUsername}`, { headers }),
+  pages(`/users/${githubUsername}/repos?type=owner&sort=updated`),
+  pages(`/users/${githubUsername}/events/public`, 3),
   request('https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/', {
     method: 'POST',
-    body: new URLSearchParams({ itemcount: '1', 'publishedfileids[0]': '3597784225' })
-  })
+    body: new URLSearchParams({ itemcount: '1', 'publishedfileids[0]': workshopId }),
+  }),
+  request(`https://api.github.com/repos/${repository}/releases/latest`, { headers }),
 ]);
-const addon = steam.response?.publishedfiledetails?.find((item) => item.publishedfileid === '3597784225');
-if (!addon || addon.result !== 1 || addon.consumer_app_id !== 4000) throw new Error('Better Lights Workshop metadata is unavailable.');
-if (release.draft !== false || release.prerelease !== false || !Array.isArray(release.assets)) throw new Error('Expected a published stable release.');
-const data = {
-  subscribers: addon.subscriptions,
-  repository: repo.full_name,
-  name: repo.name,
-  description: repo.description ?? '',
-  repoUrl: repo.html_url,
-  hasIssues: repo.has_issues,
-  readmeUrl: readme.html_url,
-  readmeRawUrl: readme.download_url,
-  readmeHtml,
-  version: release.tag_name,
-  releaseUrl: release.html_url,
-  downloads: release.assets.filter((asset) => asset.state === 'uploaded')
-    .map((asset) => ({ name: asset.label || asset.name, url: asset.browser_download_url }))
+
+if (profile.login?.toLowerCase() !== githubUsername.toLowerCase()) throw new Error('Unexpected GitHub profile.');
+const addon = steam.response?.publishedfiledetails?.find((item) => item.publishedfileid === workshopId);
+if (!addon || addon.result !== 1 || addon.consumer_app_id !== 4000) throw new Error('Better Lights Workshop statistics are unavailable.');
+if (release.draft !== false || release.prerelease !== false || typeof release.tag_name !== 'string') {
+  throw new Error('Expected a published stable nwmpublisher release.');
+}
+
+const updatedAt = new Date().toISOString();
+const today = new Date(updatedAt.slice(0, 10) + 'T00:00:00Z');
+const activity = Array.from({ length: 30 }, (_, index) => ({
+  date: new Date(today.getTime() - (29 - index) * 86_400_000).toISOString().slice(0, 10),
+  count: 0,
+}));
+const counts = new Map(activity.map((day) => [day.date, day]));
+const eventIds = new Set();
+for (const event of events) {
+  if (typeof event.id !== 'string' || typeof event.created_at !== 'string'
+    || !Number.isFinite(Date.parse(event.created_at)) || typeof event.repo?.name !== 'string') {
+    throw new Error('Invalid GitHub public event.');
+  }
+  if (eventIds.has(event.id)) continue;
+  eventIds.add(event.id);
+  const day = counts.get(event.created_at.slice(0, 10));
+  if (day) day.count++;
+}
+
+const snapshot = {
+  updatedAt,
+  github: {
+    username: profile.login,
+    repositories: count(profile.public_repos, 'repository count'),
+    followers: count(profile.followers, 'followers'),
+    stars: repos.reduce((sum, repo) => sum + count(repo.stargazers_count, 'repository stars'), 0),
+    forks: repos.reduce((sum, repo) => sum + count(repo.forks_count, 'repository forks'), 0),
+    activity,
+    // The Events API exposes at most 300 events in the last 30 days, not the contributions calendar.
+    activityLimited: events.length === 300,
+  },
+  steam: {
+    workshopId,
+    subscribers: count(addon.subscriptions, 'Workshop subscribers'),
+    favorites: count(addon.favorited, 'Workshop favorites'),
+    views: count(addon.views, 'Workshop views'),
+  },
+  release: {
+    version: release.tag_name,
+    url: `https://github.com/${repository}/releases/tag/${encodeURIComponent(release.tag_name)}`,
+  },
 };
-validateFeatured(data);
-// Publish a new snapshot only when every required source has succeeded.
-const path = new URL('../data/projects.json', import.meta.url);
-const temporary = new URL('../data/projects.json.tmp', import.meta.url);
-await writeFile(temporary, JSON.stringify(data, null, 2) + '\n');
+
+// Keep the last valid snapshot intact if any source or validation fails.
+const path = new URL('../data/stats.json', import.meta.url);
+const temporary = new URL('../data/stats.json.tmp', import.meta.url);
+await writeFile(temporary, JSON.stringify(snapshot, null, 2) + '\n');
 await rename(temporary, path);
-console.log('Updated repository metadata, README, release downloads, and Better Lights subscribers.');
+console.log(`Updated public GitHub activity, Better Lights Workshop statistics, and release ${release.tag_name}.`);

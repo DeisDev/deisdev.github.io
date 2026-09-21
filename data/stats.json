@@ -1,0 +1,143 @@
+{
+  "updatedAt": "2026-09-21T20:37:48.724Z",
+  "github": {
+    "username": "DeisDev",
+    "repositories": 12,
+    "followers": 2,
+    "stars": 5,
+    "forks": 1,
+    "activity": [
+      {
+        "date": "2026-08-23",
+        "count": 0
+      },
+      {
+        "date": "2026-08-24",
+        "count": 14
+      },
+      {
+        "date": "2026-08-25",
+        "count": 11
+      },
+      {
+        "date": "2026-08-26",
+        "count": 1
+      },
+      {
+        "date": "2026-08-27",
+        "count": 0
+      },
+      {
+        "date": "2026-08-28",
+        "count": 0
+      },
+      {
+        "date": "2026-08-29",
+        "count": 0
+      },
+      {
+        "date": "2026-08-30",
+        "count": 0
+      },
+      {
+        "date": "2026-08-31",
+        "count": 0
+      },
+      {
+        "date": "2026-09-01",
+        "count": 2
+      },
+      {
+        "date": "2026-09-02",
+        "count": 4
+      },
+      {
+        "date": "2026-09-03",
+        "count": 3
+      },
+      {
+        "date": "2026-09-04",
+        "count": 1
+      },
+      {
+        "date": "2026-09-05",
+        "count": 19
+      },
+      {
+        "date": "2026-09-06",
+        "count": 0
+      },
+      {
+        "date": "2026-09-07",
+        "count": 1
+      },
+      {
+        "date": "2026-09-08",
+        "count": 0
+      },
+      {
+        "date": "2026-09-09",
+        "count": 1
+      },
+      {
+        "date": "2026-09-10",
+        "count": 15
+      },
+      {
+        "date": "2026-09-11",
+        "count": 1
+      },
+      {
+        "date": "2026-09-12",
+        "count": 9
+      },
+      {
+        "date": "2026-09-13",
+        "count": 13
+      },
+      {
+        "date": "2026-09-14",
+        "count": 0
+      },
+      {
+        "date": "2026-09-15",
+        "count": 1
+      },
+      {
+        "date": "2026-09-16",
+        "count": 12
+      },
+      {
+        "date": "2026-09-17",
+        "count": 4
+      },
+      {
+        "date": "2026-09-18",
+        "count": 11
+      },
+      {
+        "date": "2026-09-19",
+        "count": 0
+      },
+      {
+        "date": "2026-09-20",
+        "count": 1
+      },
+      {
+        "date": "2026-09-21",
+        "count": 25
+      }
+    ],
+    "activityLimited": false
+  },
+  "steam": {
+    "workshopId": "3597784225",
+    "subscribers": 143711,
+    "favorites": 13009,
+    "views": 133276
+  },
+  "release": {
+    "version": "3.0.0",
+    "url": "https://github.com/DeisDev/nwmpublisher/releases/tag/3.0.0"
+  }
+}

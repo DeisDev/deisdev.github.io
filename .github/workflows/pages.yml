@@ -26,12 +26,12 @@ jobs:
           package-manager-cache: false
       - name: Install build dependencies
         run: npm ci --ignore-scripts
-      - name: Check source syntax
-        run: npm run check
-      - name: Refresh featured project metadata
+      - name: Refresh GitHub and Workshop statistics
         run: npm run sync
         env:
           GITHUB_TOKEN: ${{ github.token }}
+      - name: Check Astro and TypeScript
+        run: npm run check
       - name: Build static HTML
         run: npm run build
       - uses: actions/configure-pages@v5

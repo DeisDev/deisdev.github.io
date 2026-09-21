@@ -6,12 +6,16 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
     "sync": "node scripts/sync.mjs",
-    "check": "node --check scripts/build.mjs && node --check scripts/catalog.mjs && node --check scripts/icons.mjs && node --check scripts/sync.mjs && node --check src/theme.js"
+    "check": "astro check && node --check scripts/sync.mjs"
   },
   "devDependencies": {
-    "sanitize-html": "2.17.7",
-    "simple-icons": "15.22.0"
+    "@astrojs/check": "0.9.10",
+    "astro": "7.3.3",
+    "simple-icons": "15.22.0",
+    "typescript": "6.0.3"
   }
 }
