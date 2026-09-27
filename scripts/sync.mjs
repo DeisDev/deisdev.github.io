@@ -1,11 +1,9 @@
 import { readFile, writeFile, rename } from 'node:fs/promises';
 
 const source = JSON.parse(await readFile(new URL('../data/source.json', import.meta.url), 'utf8'));
-const { githubUsername, workshopId, repository } = source;
-if (typeof githubUsername !== 'string' || !/^[\w-]+$/.test(githubUsername)
-  || typeof workshopId !== 'string' || !/^\d+$/.test(workshopId)
-  || typeof repository !== 'string' || !/^[\w.-]+\/[\w.-]+$/.test(repository)) {
-  throw new Error('Set a valid GitHub username, repository, and Steam Workshop ID in data/source.json.');
+const { githubUsername } = source;
+if (typeof githubUsername !== 'string' || !/^[\w-]+$/.test(githubUsername)) {
+  throw new Error('Set a valid GitHub username in data/source.json.');
 }
 
 const headers = {
@@ -42,23 +40,13 @@ function count(value, label) {
   return value;
 }
 
-const [profile, repos, events, steam, release] = await Promise.all([
+const [profile, repos, events] = await Promise.all([
   request(`https://api.github.com/users/${githubUsername}`, { headers }),
   pages(`/users/${githubUsername}/repos?type=owner&sort=updated`),
   pages(`/users/${githubUsername}/events/public`, 3),
-  request('https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/', {
-    method: 'POST',
-    body: new URLSearchParams({ itemcount: '1', 'publishedfileids[0]': workshopId }),
-  }),
-  request(`https://api.github.com/repos/${repository}/releases/latest`, { headers }),
 ]);
 
 if (profile.login?.toLowerCase() !== githubUsername.toLowerCase()) throw new Error('Unexpected GitHub profile.');
-const addon = steam.response?.publishedfiledetails?.find((item) => item.publishedfileid === workshopId);
-if (!addon || addon.result !== 1 || addon.consumer_app_id !== 4000) throw new Error('Better Lights Workshop statistics are unavailable.');
-if (release.draft !== false || release.prerelease !== false || typeof release.tag_name !== 'string') {
-  throw new Error('Expected a published stable nwmpublisher release.');
-}
 
 const updatedAt = new Date().toISOString();
 const today = new Date(updatedAt.slice(0, 10) + 'T00:00:00Z');
@@ -91,16 +79,6 @@ const snapshot = {
     // The Events API exposes at most 300 events in the last 30 days, not the contributions calendar.
     activityLimited: events.length === 300,
   },
-  steam: {
-    workshopId,
-    subscribers: count(addon.subscriptions, 'Workshop subscribers'),
-    favorites: count(addon.favorited, 'Workshop favorites'),
-    views: count(addon.views, 'Workshop views'),
-  },
-  release: {
-    version: release.tag_name,
-    url: `https://github.com/${repository}/releases/tag/${encodeURIComponent(release.tag_name)}`,
-  },
 };
 
 // Keep the last valid snapshot intact if any source or validation fails.
@@ -108,4 +86,4 @@ const path = new URL('../data/stats.json', import.meta.url);
 const temporary = new URL('../data/stats.json.tmp', import.meta.url);
 await writeFile(temporary, JSON.stringify(snapshot, null, 2) + '\n');
 await rename(temporary, path);
-console.log(`Updated public GitHub activity, Better Lights Workshop statistics, and release ${release.tag_name}.`);
+console.log('Updated public GitHub statistics and activity.');

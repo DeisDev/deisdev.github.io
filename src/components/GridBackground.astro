@@ -1,0 +1,26 @@
+<div class="site-grid" aria-hidden="true"></div>
+
+<script>
+  const grid = document.querySelector<HTMLElement>('.site-grid');
+
+  if (grid) {
+    const hideGrid = () => { grid.classList.remove('is-visible'); };
+
+    document.addEventListener('pointermove', (event) => {
+      if (event.pointerType === 'touch') {
+        hideGrid();
+        return;
+      }
+
+      grid.style.setProperty('--pointer-x', `${event.clientX}px`);
+      grid.style.setProperty('--pointer-y', `${event.clientY}px`);
+      grid.classList.add('is-visible');
+    });
+
+    document.documentElement.addEventListener('pointerleave', hideGrid);
+    window.addEventListener('blur', hideGrid);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) hideGrid();
+    });
+  }
+</script>

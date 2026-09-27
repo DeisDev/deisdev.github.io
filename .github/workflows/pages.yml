@@ -26,7 +26,7 @@ jobs:
           package-manager-cache: false
       - name: Install build dependencies
         run: npm ci --ignore-scripts
-      - name: Refresh GitHub and Workshop statistics
+      - name: Refresh GitHub statistics
         run: npm run sync
         env:
           GITHUB_TOKEN: ${{ github.token }}
